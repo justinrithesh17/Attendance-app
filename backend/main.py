@@ -7,9 +7,9 @@ import models, schemas, auth
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-@app.get("/ping")
-def ping():
-    return {"message": "backend is alive"}
+@app.get("/")
+def root():
+    return {"message": "backend is running successfully"}
 
 
 app.add_middleware(
