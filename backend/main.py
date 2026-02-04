@@ -7,6 +7,7 @@ import models, schemas, auth
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
 @app.get("/")
 def root():
     return {"message": "backend is running successfully"}
