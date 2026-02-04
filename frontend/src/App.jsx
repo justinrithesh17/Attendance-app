@@ -4,7 +4,7 @@ import Login from "./components/Login"
 import StudentDashboard from "./components/StudentDashboard"
 import TeacherDashboard from "./components/TeacherDashboard"
 
-axios.defaults.baseURL = "http://127.0.0.1.8000"
+axios.defaults.baseURL = "https://attendance-backend-fdhd.onrender.com"
 
 function App() {
   const [user, setUser] = useState(null)
