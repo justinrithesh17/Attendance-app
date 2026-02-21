@@ -71,7 +71,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return {"msg": "User registered"}
 
 
-# Login
+# Login (merged from your first snippet)
 @app.post("/login")
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -95,9 +95,45 @@ def login(
         "role": user.role
     }
 
+@app.post("/attendance")
+def mark_attendance(
+    att: schemas.AttendanceCreate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.role != "teacher":
+        raise HTTPException(status_code=403, detail="Only teachers can mark attendance")
+
+    record = models.Attendance(**att.dict())
+    db.add(record)
+    db.commit()
+
+    return {"msg": "Attendance marked"}
+
+
 # Protected attendance route
 @app.get("/attendance")
 def get_attendance(
+    att: schemas.AttendanceCreate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if curret_user.role != "teacher":
+        raise HTTPException(status_code=403, detail="Only teachers can mark attendance")
+
+    record = models.Attendance(**att.dict())
+    db.add(record)
+    db.commit()
+
+    records = db.query(models.Attendance).filter(
+        models.Attendance.student_id == current_user.id
+    ).all()
+    return records
+    return {"msg": "Attendance marked"}
+
+
+@app.get("/attendance/analytics")
+def attendance_analytics(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -105,4 +141,12 @@ def get_attendance(
         models.Attendance.student_id == current_user.id
     ).all()
 
-    return records
+    total = len(records)
+    present = len([r for r in records if r.present])
+    percentage = (present / total * 100) if total > 0 else 0
+
+    return {
+        "total_classes": total,
+        "present": present,
+        "percentage": round(percentage, 2)
+    }
