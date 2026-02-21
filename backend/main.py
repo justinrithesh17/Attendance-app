@@ -18,7 +18,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",  # for local vite
         "http://localhost:3000",  # if using CRA
-        "https://attendanceappkgc.netlify.app/"  # your Netlify domain
+        "https://attendanceappkgc.netlify.app"  # your Netlify domain
     ],
     allow_credentials=True,
     allow_methods=["*"],
