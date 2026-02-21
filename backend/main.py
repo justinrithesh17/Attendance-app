@@ -15,7 +15,11 @@ app = FastAPI()
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",  # for local vite
+        "http://localhost:3000",  # if using CRA
+        "https://attendanceappkgc.netlify.app/"  # your Netlify domain
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -101,6 +105,7 @@ def mark_attendance(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+
     if current_user.role != "teacher":
         raise HTTPException(status_code=403, detail="Only teachers can mark attendance")
 
@@ -114,22 +119,28 @@ def mark_attendance(
 # Protected attendance route
 @app.get("/attendance")
 def get_attendance(
-    att: schemas.AttendanceCreate,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    if curret_user.role != "teacher":
-        raise HTTPException(status_code=403, detail="Only teachers can mark attendance")
-
-    record = models.Attendance(**att.dict())
-    db.add(record)
-    db.commit()
 
     records = db.query(models.Attendance).filter(
         models.Attendance.student_id == current_user.id
     ).all()
-    return records
-    return {"msg": "Attendance marked"}
+
+    total = len(records)
+    present = len([r for r in records if r.present])
+    absent = total - present
+
+    percentage = 0
+    if total > 0:
+        percentage = round((present / total) * 100, 2)
+
+    return {
+        "total_classes": total,
+        "present": present,
+        "absent": absent,
+        "percentage": percentage
+    }
 
 
 @app.get("/attendance/analytics")

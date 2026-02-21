@@ -1,7 +1,7 @@
 import { useState } from "react"
 import axios from "axios"
 
-axios.defaults.baseURL = "https://super-taiyaki-68c997.https://super-taiyaki-68c997.netlify.app/.app/://127.0.0.1:8000"
+axios.defaults.baseURL = "https://attendance-backend-fdhd.onrender.com"
 
 export default function Login({ setUser }) {
 
