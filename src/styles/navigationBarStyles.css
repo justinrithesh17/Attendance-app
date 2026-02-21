@@ -1,0 +1,13 @@
+.navigation-bar-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #1e3a8a;
+  color: white;
+}
+
+.navigation-links-list {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+}
