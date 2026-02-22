@@ -11,15 +11,31 @@ export default function Attendance({ teacher }) {
   const [attendanceData, setAttendanceData] = useState(null)
 
   const markAttendance = async () => {
-    await axios.post("/attendance", {
-      student_id: Number(studentId),
-      date: new Date().toISOString().split("T")[0],
-      present
-    })
-    alert("Attendance marked")
+
+    try {
+
+      // ✅ GET TOKEN
+      const token = localStorage.getItem("token")
+
+      await axios.post("/attendance", {
+        student_id: Number(studentId),
+        date: new Date().toISOString().split("T")[0],
+        present
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`  // ✅ ADDED TOKEN HEADER
+        }
+      })
+
+      alert("Attendance marked")
+
+    } catch (error) {
+      console.log("Error marking attendance:", error)
+      alert("Failed to mark attendance")
+    }
   }
 
-  // ✅ NEW: Fetch student attendance if NOT teacher
+  // ✅ Fetch student attendance if NOT teacher
   useEffect(() => {
 
     if (!teacher) {
@@ -27,6 +43,7 @@ export default function Attendance({ teacher }) {
       const fetchAttendance = async () => {
         try {
 
+          // ✅ TOKEN MODULE ADDED HERE (AS REQUESTED)
           const token = localStorage.getItem("token")
 
           const response = await axios.get("/attendance", {
@@ -47,7 +64,7 @@ export default function Attendance({ teacher }) {
 
   }, [teacher])
 
-  // ✅ NEW: Prepare chart data
+  // ✅ Prepare chart data
   const chartData = attendanceData ? [
     { name: "Present", value: attendanceData.present },
     { name: "Absent", value: attendanceData.absent }
@@ -78,7 +95,6 @@ export default function Attendance({ teacher }) {
         </>
       )}
 
-      {/* ✅ STUDENT VIEW (ADDED) */}
       {!teacher && attendanceData && (
         <div>
 
