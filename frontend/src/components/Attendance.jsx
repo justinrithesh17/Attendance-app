@@ -11,29 +11,33 @@ export default function Attendance({ teacher }) {
   const [attendanceData, setAttendanceData] = useState(null)
 
   const markAttendance = async () => {
+  try {
 
-    try {
+    const token = localStorage.getItem("token")
 
-      // ✅ GET TOKEN
-      const token = localStorage.getItem("token")
+    console.log("Token being sent:", token)  // Debug
 
-      await axios.post("/attendance", {
+    await axios.post(
+      "/attendance",
+      {
         student_id: Number(studentId),
         date: new Date().toISOString().split("T")[0],
         present
-      }, {
+      },
+      {
         headers: {
-          Authorization: `Bearer ${token}`  // ✅ ADDED TOKEN HEADER
+          Authorization: `Bearer ${token}`
         }
-      })
+      }
+    )
 
-      alert("Attendance marked")
+    alert("Attendance marked")
 
-    } catch (error) {
-      console.log("Error marking attendance:", error)
-      alert("Failed to mark attendance")
-    }
+  } catch (error) {
+    console.log("POST ERROR:", error.response?.data)
+    alert("Failed to mark attendance")
   }
+}
 
   // ✅ Fetch student attendance if NOT teacher
   useEffect(() => {
